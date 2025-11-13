@@ -7,7 +7,7 @@ const AboutSection = () => {
   // Show loading skeleton while fetching
   if (loading) {
     return (
-      <section id="about" className="relative py-24 lg:py-32 overflow-hidden bg-sinar-dark">
+      <section id="about" className="relative py-16 sm:py-20 lg:py-24 overflow-hidden bg-sinar-dark">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <StatsSkeleton />
         </div>
@@ -30,23 +30,23 @@ const AboutSection = () => {
   }
 
   return (
-    <section id="about" className="relative py-24 lg:py-32 overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-0 w-72 h-72 bg-sinar-gold/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-sinar-gold-light/20 rounded-full blur-3xl"></div>
+    <section id="about" className="relative py-16 sm:py-20 lg:py-24 overflow-hidden">
+      {/* Background Elements - Reduced for mobile */}
+      <div className="absolute inset-0 opacity-[0.03] md:opacity-5">
+        <div className="absolute top-0 left-0 w-48 h-48 md:w-72 md:h-72 bg-sinar-gold/20 md:bg-sinar-gold/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-sinar-gold-light/15 md:bg-sinar-gold-light/20 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Left Content */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <div className="inline-block px-4 py-1.5 bg-sinar-gold/10 border border-sinar-gold/30 rounded-full">
-                <span className="text-sm text-sinar-gold font-medium">{about.badge}</span>
+          <div className="space-y-6 sm:space-y-8">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 bg-sinar-gold/10 border border-sinar-gold/30 rounded-full">
+                <span className="text-xs sm:text-sm text-sinar-gold font-medium">{about.badge}</span>
               </div>
 
-              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
                 {about.title.split(' ').slice(0, -1).join(' ')}{' '}
                 <span className="text-sinar-gold">{about.title.split(' ').slice(-1)}</span>
               </h2>

@@ -22,16 +22,11 @@ export default function AdminLayout({ children }) {
     { path: '/admin/initialize', label: 'Initialize DB', icon: '🚀', highlight: true },
     { path: '/admin/hero', label: 'Hero Section', icon: '🎯' },
     { path: '/admin/about', label: 'About Section', icon: '📝' },
-    { path: '/admin/divisions', label: 'Divisions', icon: '🏢' },
     { path: '/admin/portfolio', label: 'Portfolio', icon: '💼' },
     { path: '/admin/testimonials', label: 'Testimonials', icon: '💬' },
     { path: '/admin/workflow', label: 'Workflow', icon: '⚙️' },
     { path: '/admin/templates', label: 'Templates', icon: '📄' },
     { path: '/admin/faq', label: 'FAQ', icon: '❓' },
-    { path: '/admin/team', label: 'AI Employees', icon: '👥' },
-    { path: '/admin/case-studies', label: 'Case Studies', icon: '📚' },
-    { path: '/admin/founders', label: 'Founders', icon: '👔' },
-    { path: '/admin/tech-stack', label: 'Tech Stack', icon: '💻' },
   ];
 
   return (

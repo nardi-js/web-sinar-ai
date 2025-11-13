@@ -1,153 +1,114 @@
 import { useState } from 'react'
-import { useFirestoreCollection } from '../hooks/useFirestore'
-import { SectionSkeleton } from './LoadingSkeletons'
 
 const DivisionsSection = () => {
   const [hoveredCard, setHoveredCard] = useState(null)
-  const { data: divisionsData, loading } = useFirestoreCollection('divisions')
 
-  // Show loading skeleton
-  if (loading) {
-    return (
-      <section id="divisions" className="relative py-24 lg:py-32 bg-sinar-dark">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <SectionSkeleton />
-        </div>
-      </section>
-    )
-  }
-
-  // Use fetched data or fallback
-  const divisions = divisionsData.length > 0 ? divisionsData : []
-
-  // Icon mapping helper
-  const getIcon = (iconName) => {
-    const icons = {
-      palette: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-        </svg>
-      ),
-      monitor: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z" />
-        </svg>
-      ),
-      document: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-        </svg>
-      ),
-      brain: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-        </svg>
-      )
-    }
-    return icons[iconName] || icons.brain
-  }
-
-  // Color mapping helper
-  const getColors = (colorScheme) => {
-    const colors = {
-      yellow: {
-        gradient: 'from-yellow-500/20 to-orange-500/10',
-        border: 'border-yellow-500/30',
-        hoverBorder: 'group-hover:border-yellow-500/60',
-        iconBg: 'bg-yellow-500/10',
-        iconHoverBg: 'group-hover:bg-yellow-500/20',
-      },
-      blue: {
-        gradient: 'from-blue-500/20 to-cyan-500/10',
-        border: 'border-blue-500/30',
-        hoverBorder: 'group-hover:border-blue-500/60',
-        iconBg: 'bg-blue-500/10',
-        iconHoverBg: 'group-hover:bg-blue-500/20',
-      },
-      green: {
-        gradient: 'from-green-500/20 to-emerald-500/10',
-        border: 'border-green-500/30',
-        hoverBorder: 'group-hover:border-green-500/60',
-        iconBg: 'bg-green-500/10',
-        iconHoverBg: 'group-hover:bg-green-500/20',
-      },
-      purple: {
-        gradient: 'from-purple-500/20 to-pink-500/10',
-        border: 'border-purple-500/30',
-        hoverBorder: 'group-hover:border-purple-500/60',
-        iconBg: 'bg-purple-500/10',
-        iconHoverBg: 'group-hover:bg-purple-500/20',
-      }
-    }
-    return colors[colorScheme] || colors.blue
-  }
+  const divisions = [
+    {
+      id: 1,
+      icon: '🎨',
+      title: 'Creative Studio',
+      subtitle: 'Design & Innovation',
+      description: 'Where aesthetics meet intelligence. Our AI designers craft visually stunning, user-centric experiences.',
+      features: ['UI/UX Design', 'Brand Identity', 'Motion Graphics', 'Visual Content'],
+      gradient: 'from-pink-400 via-purple-400 to-indigo-400',
+      bgGradient: 'from-pink-500/10 to-sinar-gold-light/20'
+    },
+    {
+      id: 2,
+      icon: '💻',
+      title: 'Tech Studio',
+      subtitle: 'Development & Engineering',
+      description: 'Building robust, scalable systems. Our AI developers turn complex requirements into elegant code.',
+      features: ['Web Development', 'Mobile Apps', 'Cloud Solutions', 'API Integration'],
+      gradient: 'from-sinar-gold via-sinar-gold-light to-yellow-400',
+      bgGradient: 'from-sinar-gold/30 to-yellow-400/15'
+    },
+    {
+      id: 3,
+      icon: '📊',
+      title: 'Strategy Studio',
+      subtitle: 'Content & Analytics',
+      description: 'Data-driven decisions, compelling narratives. Our AI strategists blend analytics with storytelling.',
+      features: ['Content Strategy', 'Data Analysis', 'SEO Optimization', 'Market Research'],
+      gradient: 'from-emerald-400 via-green-400 to-lime-400',
+      bgGradient: 'from-emerald-500/10 to-green-500/10'
+    },
+  ]
 
   return (
-    <section id="divisions" className="relative py-24 lg:py-32 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+    <section id="divisions" className="relative py-16 sm:py-20 lg:py-24 overflow-hidden bg-gradient-to-b from-sinar-dark via-sinar-dark-light to-sinar-dark">
+      {/* Animated Background Grid */}
+      <div className="absolute inset-0 opacity-[0.03]">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, #D4AF37 1px, transparent 0)`,
-            backgroundSize: '40px 40px',
+            backgroundImage: 'linear-gradient(to right, #d4af37 1px, transparent 1px), linear-gradient(to bottom, #d4af37 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+            animation: 'gridMove 20s linear infinite'
           }}
         ></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+      {/* Floating Orbs - Reduced for mobile */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 md:opacity-100">
+        <div className="absolute top-20 left-[10%] w-64 h-64 md:w-96 md:h-96 bg-gradient-to-r from-pink-500/10 to-sinar-gold-light/15 md:from-pink-500/15 md:to-sinar-gold-light/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-[15%] w-80 h-80 md:w-[500px] md:h-[500px] bg-gradient-to-r from-sinar-gold/20 to-yellow-400/10 md:from-sinar-gold/30 md:to-yellow-400/15 rounded-full blur-3xl animate-float-delayed"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1.5 mb-6 bg-sinar-gold/10 border border-sinar-gold/30 rounded-full">
-            <span className="text-sm text-sinar-gold font-medium">Our Divisions</span>
+        <div className="text-center mb-12 sm:mb-16 lg:mb-20">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 mb-6 sm:mb-8 bg-gradient-to-r from-pink-500/10 via-sinar-gold-light/20 to-sinar-gold/30 border border-pink-400/30 rounded-full backdrop-blur-sm animate-fadeIn">
+            <span className="text-xl sm:text-2xl">🏢</span>
+            <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-pink-400 via-sinar-gold to-sinar-gold-light bg-clip-text text-transparent">
+              Our Divisions
+            </span>
           </div>
 
+          {/* Main Heading */}
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
             Three Studios.{' '}
-            <span className="text-sinar-gold">Infinite Solutions.</span>
+            <span className="bg-gradient-to-r from-pink-400 via-sinar-gold to-sinar-gold-light bg-clip-text text-transparent">
+              Infinite Solutions.
+            </span>
           </h2>
 
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto">
             Our AI workforce is organized into specialized studios, each focused on delivering excellence in their domain.
           </p>
         </div>
 
-        {/* Division Cards */}
+        {/* Division Cards Grid */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {divisions.map((division, index) => {
-            const colors = getColors(division.colorScheme || 'blue')
-            return (
-              <div
-                key={division.id || index}
-                className={`group relative p-8 bg-sinar-dark-light border ${colors.border} ${colors.hoverBorder} rounded-2xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sinar-gold/10`}
-                onMouseEnter={() => setHoveredCard(index)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                {/* Background Gradient on Hover */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl`}
-                ></div>
+          {divisions.map((division, index) => (
+            <div
+              key={division.id}
+              className="group relative p-8 bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm hover:border-gray-600/80 transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:shadow-sinar-gold-light/20"
+              onMouseEnter={() => setHoveredCard(index)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              {/* Hover Gradient Overlay */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${division.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}></div>
 
-                {/* Content */}
-                <div className="relative z-10 space-y-6">
-                  {/* Icon */}
-                  <div
-                    className={`inline-flex items-center justify-center w-16 h-16 ${colors.iconBg} ${colors.iconHoverBg} text-sinar-gold rounded-xl transition-all duration-500 ${
-                      hoveredCard === index ? 'scale-110 rotate-6' : ''
-                    }`}
-                  >
-                    {getIcon(division.icon)}
-                  </div>
+              {/* Content */}
+              <div className="relative z-10 space-y-6">
+                {/* Icon */}
+                <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br ${division.bgGradient} rounded-2xl text-5xl transform ${hoveredCard === index ? 'scale-110 rotate-6' : ''} transition-all duration-500`}>
+                  {division.icon}
+                </div>
 
-                  {/* Title */}
-                  <div className="space-y-2">
-                    <h3 className="font-display text-2xl font-bold text-white">
-                      {division.title}
-                    </h3>
-                    <p className="text-sm text-sinar-gold-light font-medium">
-                      {division.subtitle}
-                    </p>
-                  </div>
+                {/* Title & Subtitle */}
+                <div className="space-y-2">
+                  <h3 className={`font-display text-2xl md:text-3xl font-bold bg-gradient-to-r ${division.gradient} bg-clip-text text-transparent`}>
+                    {division.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 font-semibold">
+                    {division.subtitle}
+                  </p>
+                </div>
 
                   {/* Description */}
                   <p className="text-gray-400 leading-relaxed">
@@ -174,37 +135,36 @@ const DivisionsSection = () => {
                     ))}
                   </ul>
 
-                  {/* Learn More Link */}
-                  <div className="pt-4">
-                    <a
-                      href="#contact"
-                      className="inline-flex items-center space-x-2 text-sinar-gold hover:text-sinar-gold-light font-medium transition-colors duration-300"
+                {/* Learn More Link */}
+                <div className="pt-4">
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center space-x-2 text-sinar-gold hover:text-sinar-gold-light font-medium transition-colors duration-300"
+                  >
+                    <span>Learn More</span>
+                    <svg
+                      className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <span>Learn More</span>
-                      <svg
-                        className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Corner Accent */}
-                <div className="absolute top-0 right-0 w-20 h-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-sinar-gold/30 rounded-tr-2xl"></div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </a>
                 </div>
               </div>
-            )
-          })}
+
+              {/* Corner Accent */}
+              <div className="absolute top-0 right-0 w-20 h-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-sinar-gold/30 rounded-tr-2xl"></div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Bottom CTA */}

@@ -1,385 +1,385 @@
-import { useState, useEffect } from 'react'
-import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore'
-import { db } from '../../config/firebase'
+import { useState, useEffect } from 'react';
+import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import AdminLayout from '../../components/admin/AdminLayout';
 
 export default function AdminTemplates() {
-  const [templates, setTemplates] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [editingId, setEditingId] = useState(null)
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [message, setMessage] = useState({ type: '', text: '' });
+
   const [formData, setFormData] = useState({
     id: '',
     title: '',
     description: '',
-    category: '',
+    category: 'Web Development',
     price: '',
-    features: [''],
+    originalPrice: '',
+    timeline: '',
+    image: '',
+    demoUrl: '',
+    detailsUrl: '',
     tech: [''],
+    features: [''],
+    cta: {
+      text: 'View Details',
+      link: '/templates'
+    },
     featured: false
-  })
-  const [message, setMessage] = useState({ type: '', text: '' })
+  });
 
   useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'templates'))
-        const templatesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        setTemplates(templatesData)
-        setLoading(false)
-      } catch (error) {
-        console.error('Error fetching templates:', error)
-        setMessage({ type: 'error', text: 'Failed to fetch templates' })
-        setLoading(false)
-      }
-    }
-    fetchTemplates()
-  }, [])
+    fetchTemplates();
+  }, []);
 
   const fetchTemplates = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'templates'))
+      setLoading(true);
+      const querySnapshot = await getDocs(collection(db, 'templates'));
       const templatesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }))
-      setTemplates(templatesData)
+      }));
+      setTemplates(templatesData);
     } catch (error) {
-      console.error('Error fetching templates:', error)
+      console.error('Error fetching templates:', error);
+      showMessage('error', 'Failed to fetch templates');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  const handleEdit = (template) => {
-    setEditingId(template.id)
-    setFormData({
-      id: template.id,
-      title: template.title,
-      description: template.description,
-      category: template.category,
-      price: template.price,
-      features: template.features || [''],
-      tech: template.tech || [''],
-      featured: template.featured || false
-    })
-  }
+  const showMessage = (type, text) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+  };
 
-  const handleAddNew = () => {
-    setEditingId('new')
+  const resetForm = () => {
     setFormData({
       id: '',
       title: '',
       description: '',
-      category: '',
+      category: 'Web Development',
       price: '',
-      features: [''],
+      originalPrice: '',
+      timeline: '',
+      image: '',
+      demoUrl: '',
+      detailsUrl: '',
       tech: [''],
+      features: [''],
+      cta: {
+        text: 'View Details',
+        link: '/templates'
+      },
       featured: false
-    })
-  }
+    });
+    setEditingTemplate(null);
+  };
 
-  const handleCancel = () => {
-    setEditingId(null)
-  }
+  const handleOpenModal = (template = null) => {
+    if (template) {
+      setEditingTemplate(template);
+      setFormData({
+        ...template,
+        tech: template.tech || [''],
+        features: template.features || [''],
+        cta: template.cta || { text: 'View Details', link: '/templates' }
+      });
+    } else {
+      resetForm();
+    }
+    setShowModal(true);
+  };
 
-  const handleSave = async () => {
+  const handleCloseModal = () => {
+    setShowModal(false);
+    resetForm();
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Auto-generate ID from title
+  const generateId = (title) => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with dashes
+      .replace(/-+/g, '-'); // Remove multiple dashes
+  };
+
+  const handleArrayChange = (index, value, field) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].map((item, i) => i === index ? value : item)
+    }));
+  };
+
+  const addArrayItem = (field) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...prev[field], '']
+    }));
+  };
+
+  const removeArrayItem = (index, field) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.title) {
+      showMessage('error', 'Title is required');
+      return;
+    }
+
     try {
-      if (!formData.id || !formData.title) {
-        setMessage({ type: 'error', text: 'ID and title are required' })
-        return
-      }
+      // Auto-generate ID from title if not editing
+      const templateId = editingTemplate ? formData.id : generateId(formData.title);
+      
+      // Auto-set CTA if not provided
+      const ctaData = {
+        text: formData.cta.text || 'View Details',
+        link: formData.cta.link || '/templates'
+      };
 
       const templateData = {
         title: formData.title,
         description: formData.description,
         category: formData.category,
         price: formData.price,
-        features: formData.features.filter(f => f.trim() !== ''),
+        originalPrice: formData.originalPrice,
+        timeline: formData.timeline,
+        image: formData.image,
+        demoUrl: formData.demoUrl,
+        detailsUrl: formData.detailsUrl,
         tech: formData.tech.filter(t => t.trim() !== ''),
+        features: formData.features.filter(f => f.trim() !== ''),
+        cta: ctaData,
         featured: formData.featured,
         updatedAt: new Date().toISOString()
+      };
+
+      if (editingTemplate) {
+        await updateDoc(doc(db, 'templates', templateId), templateData);
+        showMessage('success', 'Template updated successfully!');
+      } else {
+        await setDoc(doc(db, 'templates', templateId), {
+          ...templateData,
+          createdAt: new Date().toISOString()
+        });
+        showMessage('success', `Template created successfully! ID: ${templateId}`);
       }
 
-      if (editingId === 'new') {
-        templateData.createdAt = new Date().toISOString()
-      }
-
-      await setDoc(doc(db, 'templates', formData.id), templateData)
-      
-      setMessage({ type: 'success', text: 'Template saved successfully!' })
-      setEditingId(null)
-      fetchTemplates()
-      
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000)
+      handleCloseModal();
+      fetchTemplates();
     } catch (error) {
-      console.error('Error saving template:', error)
-      setMessage({ type: 'error', text: 'Failed to save template' })
+      console.error('Error saving template:', error);
+      showMessage('error', 'Failed to save template');
     }
-  }
+  };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this template?')) return
+  const handleDelete = async (templateId) => {
+    if (!window.confirm('Are you sure you want to delete this template?')) return;
 
     try {
-      await deleteDoc(doc(db, 'templates', id))
-      setMessage({ type: 'success', text: 'Template deleted successfully!' })
-      fetchTemplates()
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000)
+      await deleteDoc(doc(db, 'templates', templateId));
+      showMessage('success', 'Template deleted successfully!');
+      fetchTemplates();
     } catch (error) {
-      console.error('Error deleting template:', error)
-      setMessage({ type: 'error', text: 'Failed to delete template' })
+      console.error('Error deleting template:', error);
+      showMessage('error', 'Failed to delete template');
     }
-  }
+  };
 
-  const addFeature = () => {
-    setFormData({ ...formData, features: [...formData.features, ''] })
-  }
-
-  const removeFeature = (index) => {
-    const newFeatures = formData.features.filter((_, i) => i !== index)
-    setFormData({ ...formData, features: newFeatures })
-  }
-
-  const updateFeature = (index, value) => {
-    const newFeatures = [...formData.features]
-    newFeatures[index] = value
-    setFormData({ ...formData, features: newFeatures })
-  }
-
-  const addTech = () => {
-    setFormData({ ...formData, tech: [...formData.tech, ''] })
-  }
-
-  const removeTech = (index) => {
-    const newTech = formData.tech.filter((_, i) => i !== index)
-    setFormData({ ...formData, tech: newTech })
-  }
-
-  const updateTech = (index, value) => {
-    const newTech = [...formData.tech]
-    newTech[index] = value
-    setFormData({ ...formData, tech: newTech })
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading...</div>
-      </div>
-    )
-  }
+  const categories = ['Web Development', 'Mobile App', 'E-Commerce', 'Landing Page', 'Dashboard', 'Other'];
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-display text-sinar-gold-light">Manage Templates</h1>
-        <button
-          onClick={handleAddNew}
-          className="bg-sinar-gold text-sinar-dark px-6 py-2 rounded-lg hover:bg-sinar-gold-light transition-colors"
-        >
-          Add New Template
-        </button>
-      </div>
-
-      {message.text && (
-        <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-green-900/50 text-green-200' : 'bg-red-900/50 text-red-200'}`}>
-          {message.text}
-        </div>
-      )}
-
-      {editingId ? (
-        <div className="bg-gray-800 p-6 rounded-lg mb-6 max-h-[80vh] overflow-y-auto">
-          <h2 className="text-2xl font-display mb-4 text-sinar-gold-light">
-            {editingId === 'new' ? 'Add New Template' : 'Edit Template'}
-          </h2>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Template ID</label>
-              <input
-                type="text"
-                value={formData.id}
-                onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                disabled={editingId !== 'new'}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"
-                placeholder="template-1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Title</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Description</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 h-24"
-              />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Category</label>
-                <input
-                  type="text"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"
-                  placeholder="Website, E-commerce, etc."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Price</label>
-                <input
-                  type="text"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"
-                  placeholder="$2,999"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm font-medium">Featured Template</span>
-              </label>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Features</label>
-              {formData.features.map((feature, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={feature}
-                    onChange={(e) => updateFeature(index, e.target.value)}
-                    className="flex-1 bg-gray-700 border border-gray-600 rounded px-4 py-2"
-                    placeholder="Feature"
-                  />
-                  <button
-                    onClick={() => removeFeature(index)}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={addFeature}
-                className="mt-2 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
-              >
-                Add Feature
-              </button>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Technologies</label>
-              {formData.tech.map((tech, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={tech}
-                    onChange={(e) => updateTech(index, e.target.value)}
-                    className="flex-1 bg-gray-700 border border-gray-600 rounded px-4 py-2"
-                    placeholder="Technology"
-                  />
-                  <button
-                    onClick={() => removeTech(index)}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={addTech}
-                className="mt-2 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
-              >
-                Add Technology
-              </button>
-            </div>
+    <AdminLayout>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-display font-bold text-white mb-2">Templates Management</h1>
+            <p className="text-gray-400">Manage your product templates</p>
           </div>
-
-          <div className="flex gap-4 mt-6">
-            <button
-              onClick={handleSave}
-              className="bg-sinar-gold text-sinar-dark px-6 py-2 rounded-lg hover:bg-sinar-gold-light transition-colors"
-            >
-              Save Template
-            </button>
-            <button
-              onClick={handleCancel}
-              className="bg-gray-600 px-6 py-2 rounded-lg hover:bg-gray-500 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
+          <button onClick={() => handleOpenModal()} className="px-6 py-3 bg-gradient-to-r from-sinar-gold to-yellow-600 text-black font-semibold rounded-lg hover:shadow-lg hover:shadow-sinar-gold/30 transition-all duration-300">
+            <span className="flex items-center gap-2"><span className="text-xl">+</span>Add Template</span>
+          </button>
         </div>
-      ) : null}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map((template) => (
-          <div key={template.id} className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="text-lg font-display text-sinar-gold-light">{template.title}</h3>
-                <p className="text-xs text-gray-400">{template.category}</p>
+        {message.text && (
+          <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-500/10 border border-green-500/30 text-green-400' : 'bg-red-500/10 border border-red-500/30 text-red-400'}`}>
+            {message.text}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-sinar-dark-light/50 border border-gray-800 rounded-xl p-6 animate-pulse">
+                <div className="h-40 bg-gray-800 rounded-lg mb-4"></div>
+                <div className="h-6 bg-gray-800 rounded mb-2"></div>
+                <div className="h-4 bg-gray-800 rounded mb-4"></div>
+                <div className="flex gap-2"><div className="h-8 bg-gray-800 rounded flex-1"></div><div className="h-8 bg-gray-800 rounded flex-1"></div></div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(template)}
-                  className="px-3 py-1 bg-sinar-gold text-sinar-dark rounded hover:bg-sinar-gold-light transition-colors text-xs"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(template.id)}
-                  className="px-3 py-1 bg-red-600 rounded hover:bg-red-700 transition-colors text-xs"
-                >
-                  Delete
+            ))}
+          </div>
+        ) : templates.length === 0 ? (
+          <div className="text-center py-16 bg-sinar-dark-light/50 border border-gray-800 rounded-xl">
+            <div className="text-6xl mb-4">📄</div>
+            <h3 className="text-xl font-semibold text-white mb-2">No Templates Yet</h3>
+            <p className="text-gray-400 mb-6">Start by creating your first template</p>
+            <button onClick={() => handleOpenModal()} className="px-6 py-3 bg-sinar-gold text-black font-semibold rounded-lg hover:bg-sinar-gold-light transition-colors duration-300">Create Template</button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.map((template) => (
+              <div key={template.id} className="group bg-sinar-dark-light/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-sinar-gold/30 transition-all duration-300 hover:shadow-lg hover:shadow-sinar-gold/5">
+                <div className="relative h-48 bg-gradient-to-br from-sinar-gold/20 to-yellow-600/10 overflow-hidden">
+                  {template.image ? (<img src={template.image} alt={template.title} className="w-full h-full object-cover" />) : (<div className="w-full h-full flex items-center justify-center text-6xl">📄</div>)}
+                  {template.featured && (<div className="absolute top-3 right-3 px-3 py-1 bg-sinar-gold text-black text-xs font-bold rounded-full">FEATURED</div>)}
+                </div>
+                <div className="p-6 space-y-4">
+                  <div>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-lg font-bold text-white group-hover:text-sinar-gold transition-colors duration-300">{template.title}</h3>
+                      <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full">{template.category}</span>
+                    </div>
+                    <p className="text-sm text-gray-400 line-clamp-2">{template.description}</p>
+                  </div>
+                  {template.tech && template.tech.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {template.tech.slice(0, 3).map((tech, idx) => (<span key={idx} className="text-xs px-2 py-1 bg-blue-500/10 text-blue-300 rounded">{tech}</span>))}
+                      {template.tech.length > 3 && (<span className="text-xs px-2 py-1 bg-gray-800 text-gray-400 rounded">+{template.tech.length - 3}</span>)}
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+                    <div>
+                      <div className="text-lg font-bold text-sinar-gold">{template.price}</div>
+                      {template.originalPrice && (<div className="text-xs text-gray-500 line-through">{template.originalPrice}</div>)}
+                    </div>
+                    {template.timeline && (<div className="text-sm text-gray-400">⏱️ {template.timeline}</div>)}
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <button onClick={() => handleOpenModal(template)} className="flex-1 px-4 py-2 bg-sinar-gold/10 hover:bg-sinar-gold/20 text-sinar-gold rounded-lg transition-colors duration-300 text-sm font-medium">Edit</button>
+                    <button onClick={() => handleDelete(template.id)} className="flex-1 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors duration-300 text-sm font-medium">Delete</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Modal Form */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={handleCloseModal}>
+            <div className="bg-sinar-dark-light border border-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 bg-sinar-dark-light border-b border-gray-800 p-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">{editingTemplate ? 'Edit Template' : 'Create New Template'}</h2>
+                  {!editingTemplate && <p className="text-sm text-gray-400 mt-1">ID will be auto-generated from title</p>}
+                  {editingTemplate && <p className="text-sm text-gray-400 mt-1">ID: {formData.id}</p>}
+                </div>
+                <button onClick={handleCloseModal} className="text-gray-400 hover:text-white transition-colors duration-300">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
+
+              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                {/* Title - Full Width */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Template Title *
+                  </label>
+                  <input 
+                    type="text" 
+                    name="title" 
+                    value={formData.title} 
+                    onChange={handleInputChange} 
+                    className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" 
+                    placeholder="E-Commerce Template" 
+                    required 
+                  />
+                </div>
+
+                <div><label className="block text-sm font-medium text-gray-300 mb-2">Description</label><textarea name="description" value={formData.description} onChange={handleInputChange} rows={3} className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="Describe your template..." /></div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-300 mb-2">Category</label><select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none">{categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}</select></div>
+                  <div className="flex items-center pt-8"><label className="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="featured" checked={formData.featured} onChange={handleInputChange} className="w-5 h-5 rounded" /><span className="text-sm font-medium text-gray-300">Mark as Featured</span></label></div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-300 mb-2">Price</label><input type="text" name="price" value={formData.price} onChange={handleInputChange} className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="$999" /></div>
+                  <div><label className="block text-sm font-medium text-gray-300 mb-2">Original Price</label><input type="text" name="originalPrice" value={formData.originalPrice} onChange={handleInputChange} className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="$1499" /></div>
+                  <div><label className="block text-sm font-medium text-gray-300 mb-2">Timeline</label><input type="text" name="timeline" value={formData.timeline} onChange={handleInputChange} className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="2-3 weeks" /></div>
+                </div>
+
+                <div><label className="block text-sm font-medium text-gray-300 mb-2">Image URL</label><input type="text" name="image" value={formData.image} onChange={handleInputChange} className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="https://example.com/image.jpg" /></div>
+
+                {/* Demo & Details URLs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Live Demo URL
+                    </label>
+                    <input 
+                      type="text" 
+                      name="demoUrl" 
+                      value={formData.demoUrl} 
+                      onChange={handleInputChange} 
+                      className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" 
+                      placeholder="https://demo.example.com" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Details URL
+                    </label>
+                    <input 
+                      type="text" 
+                      name="detailsUrl" 
+                      value={formData.detailsUrl} 
+                      onChange={handleInputChange} 
+                      className="w-full px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" 
+                      placeholder="https://example.com/template-details" 
+                    />
+                  </div>
+                </div>
+
+                <div><label className="block text-sm font-medium text-gray-300 mb-2">Tech Stack</label><div className="space-y-2">{formData.tech.map((tech, index) => (<div key={index} className="flex gap-2"><input type="text" value={tech} onChange={(e) => handleArrayChange(index, e.target.value, 'tech')} className="flex-1 px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="React.js" /><button type="button" onClick={() => removeArrayItem(index, 'tech')} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors duration-300">✕</button></div>))}<button type="button" onClick={() => addArrayItem('tech')} className="w-full px-4 py-2 bg-sinar-gold/10 hover:bg-sinar-gold/20 text-sinar-gold rounded-lg transition-colors duration-300 text-sm font-medium">+ Add Tech</button></div></div>
+
+                <div><label className="block text-sm font-medium text-gray-300 mb-2">Features</label><div className="space-y-2">{formData.features.map((feature, index) => (<div key={index} className="flex gap-2"><input type="text" value={feature} onChange={(e) => handleArrayChange(index, e.target.value, 'features')} className="flex-1 px-4 py-2 bg-sinar-dark border border-gray-700 rounded-lg text-white focus:border-sinar-gold focus:outline-none" placeholder="Responsive design" /><button type="button" onClick={() => removeArrayItem(index, 'features')} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors duration-300">✕</button></div>))}<button type="button" onClick={() => addArrayItem('features')} className="w-full px-4 py-2 bg-sinar-gold/10 hover:bg-sinar-gold/20 text-sinar-gold rounded-lg transition-colors duration-300 text-sm font-medium">+ Add Feature</button></div></div>
+
+                {/* Info Note */}
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                  <p className="text-sm text-blue-300">
+                    <strong>Note:</strong> CTA button will be automatically set to "View Details" with link to /templates
+                  </p>
+                </div>
+
+                <div className="flex gap-4 pt-4 border-t border-gray-800">
+                  <button type="button" onClick={handleCloseModal} className="flex-1 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-300 font-medium">Cancel</button>
+                  <button type="submit" className="flex-1 px-6 py-3 bg-gradient-to-r from-sinar-gold to-yellow-600 text-black font-semibold rounded-lg hover:shadow-lg hover:shadow-sinar-gold/30 transition-all duration-300">{editingTemplate ? 'Update Template' : 'Create Template'}</button>
+                </div>
+              </form>
             </div>
-            {template.featured && (
-              <span className="inline-block px-2 py-0.5 bg-sinar-gold text-sinar-dark rounded text-xs mb-2">
-                Featured
-              </span>
-            )}
-            <p className="text-sm text-gray-300 mb-2">{template.description}</p>
-            <p className="text-sinar-gold font-bold mb-2">{template.price}</p>
-            {template.features && template.features.length > 0 && (
-              <p className="text-xs text-gray-400">
-                {template.features.length} feature{template.features.length > 1 ? 's' : ''}
-              </p>
-            )}
-            {template.tech && template.tech.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {template.tech.map((tech, idx) => (
-                  <span key={idx} className="px-2 py-0.5 bg-gray-700 rounded text-xs">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
-        ))}
+        )}
       </div>
-    </div>
-  )
+    </AdminLayout>
+  );
 }

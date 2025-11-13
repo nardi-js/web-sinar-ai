@@ -93,56 +93,55 @@ export default function AIEmployeesPage() {
   ]
 
   return (
-    <div className="min-h-screen pt-20 bg-gradient-to-b from-sinar-dark via-sinar-dark to-sinar-dark-light">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-28 overflow-hidden">
+    <div className="min-h-screen pt-20 bg-sinar-dark">
+      {/* Hero Section - Enhanced */}
+      <section className="relative py-16 sm:py-20 lg:py-24 overflow-hidden">
         {/* Animated Background Grid */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: `linear-gradient(to right, rgba(212, 175, 55, 0.1) 1px, transparent 1px),
                               linear-gradient(to bottom, rgba(212, 175, 55, 0.1) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
+            backgroundSize: '40px 40px',
+            animation: 'gridMove 20s linear infinite'
           }}></div>
         </div>
 
         {/* Glow Effects */}
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-sinar-gold/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-sinar-gold-light/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-sinar-gold/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-sinar-gold-light/10 rounded-full blur-3xl animate-float-delayed"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <div className="space-y-8">
             {/* Badge */}
-            <div className="inline-flex items-center space-x-2 px-4 py-2 bg-sinar-gold/10 border border-sinar-gold/30 rounded-full">
+            <div className="inline-flex items-center space-x-2 px-5 py-2.5 bg-sinar-dark-light/80 backdrop-blur-sm border border-sinar-gold/30 rounded-full shadow-lg shadow-sinar-gold/5">
               <span className="text-sinar-gold text-2xl">🤖</span>
-              <span className="text-sm text-sinar-gold-light font-semibold tracking-wide">AI WORKFORCE</span>
+              <span className="text-sm text-sinar-gold font-semibold tracking-wide">AI WORKFORCE</span>
             </div>
 
             {/* Title */}
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
               <span className="text-white">Meet Our </span>
-              <span className="bg-gradient-to-r from-sinar-gold to-sinar-gold-light bg-clip-text text-transparent">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sinar-gold via-sinar-gold-light to-yellow-300">
                 AI Specialists
               </span>
             </h1>
 
             {/* Description */}
-            <p className="max-w-3xl mx-auto text-xl md:text-2xl text-gray-300 leading-relaxed font-light">
+            <p className="max-w-3xl mx-auto text-xl md:text-2xl text-gray-300 leading-relaxed">
               Not human workers. Not AI creating AI. Just <span className="text-sinar-gold font-semibold">specialized task units</span> powered by existing AI tools like ChatGPT, Claude, and Midjourney — each one trained for a specific role in our workflow.
             </p>
 
             {/* Stats */}
             <div className="flex flex-wrap justify-center gap-8 pt-8">
-              <div className="text-center">
+              <div className="px-6 py-3 bg-sinar-dark-light/60 backdrop-blur-sm border border-sinar-gold/20 rounded-xl">
                 <div className="text-4xl font-bold text-sinar-gold mb-1">6</div>
                 <div className="text-sm text-gray-400 uppercase tracking-wider">AI Specialists</div>
               </div>
-              <div className="w-px h-16 bg-gradient-to-b from-transparent via-sinar-gold/30 to-transparent"></div>
-              <div className="text-center">
+              <div className="px-6 py-3 bg-sinar-dark-light/60 backdrop-blur-sm border border-sinar-gold/20 rounded-xl">
                 <div className="text-4xl font-bold text-sinar-gold mb-1">24/7</div>
                 <div className="text-sm text-gray-400 uppercase tracking-wider">Availability</div>
               </div>
-              <div className="w-px h-16 bg-gradient-to-b from-transparent via-sinar-gold/30 to-transparent"></div>
-              <div className="text-center">
+              <div className="px-6 py-3 bg-sinar-dark-light/60 backdrop-blur-sm border border-sinar-gold/20 rounded-xl">
                 <div className="text-4xl font-bold text-sinar-gold mb-1">∞</div>
                 <div className="text-sm text-gray-400 uppercase tracking-wider">Scalability</div>
               </div>
@@ -399,29 +398,98 @@ export default function AIEmployeesPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-20 lg:py-28">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-br from-sinar-gold/10 to-transparent border border-sinar-gold/30 rounded-3xl p-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-sinar-gold/5 to-transparent"></div>
-            
-            <div className="relative z-10 space-y-6">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
-                Ready to Work with Our AI Team?
-              </h2>
-              <p className="text-gray-300 text-lg">
-                Experience the power of specialized AI workflows — fast, structured, and consistently high-quality. Human-guided, AI-powered.
-              </p>
-              <a
-                href="/contact"
-                className="inline-block px-8 py-4 bg-gradient-to-r from-sinar-gold to-sinar-gold-light text-sinar-dark font-bold rounded-lg hover:shadow-xl hover:shadow-sinar-gold/50 transition-all duration-300 transform hover:-translate-y-1"
-              >
-                Start Your Project
-              </a>
-            </div>
+      {/* CTA Section - Enhanced */}
+      <section className="relative py-16 sm:py-20 lg:py-24 overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-sinar-dark via-sinar-dark-light to-sinar-dark"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-sinar-gold/10 blur-3xl rounded-full"></div>
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-8 text-center">
+          {/* Icon */}
+          <div className="text-7xl mb-8 animate-float">🚀</div>
+          
+          {/* Heading */}
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
+            Ready to Work with Our{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sinar-gold via-sinar-gold-light to-yellow-300">
+              AI Team?
+            </span>
+          </h2>
+          
+          {/* Description */}
+          <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Experience the power of specialized AI workflows — fast, structured, and consistently high-quality. 
+            Human-guided, AI-powered results that exceed expectations.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+            <a
+              href="/contact"
+              className="group relative inline-flex items-center justify-center px-10 py-5 bg-gradient-to-r from-sinar-gold to-sinar-gold-light text-sinar-dark text-lg font-bold rounded-xl shadow-lg shadow-sinar-gold/15 hover:shadow-xl hover:shadow-sinar-gold/25 hover:scale-105 transition-all duration-300"
+            >
+              <span className="relative z-10">Start Your Project</span>
+              <span className="ml-3 text-2xl group-hover:translate-x-1 transition-transform duration-300">
+                →
+              </span>
+            </a>
+            <a
+              href="/case-study"
+              className="inline-flex items-center justify-center px-10 py-5 bg-sinar-dark-light/80 backdrop-blur-sm border-2 border-sinar-gold/30 text-white text-lg font-semibold rounded-xl hover:bg-sinar-dark-light hover:border-sinar-gold/50 transition-all duration-300"
+            >
+              View Case Studies
+            </a>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap justify-center gap-8 mt-12 pt-12 border-t border-sinar-gold/20">
+            {[
+              { icon: '⚡', label: '3x Faster Delivery' },
+              { icon: '🎯', label: 'Specialized Roles' },
+              { icon: '✨', label: 'Premium Quality' },
+              { icon: '🤝', label: 'Human Oversight' }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="text-2xl">{item.icon}</span>
+                <span className="text-sm text-gray-400">{item.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Animations */}
+      <style>{`
+        @keyframes gridMove {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(50px); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes float-delayed {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-30px) rotate(-5deg); }
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-float {
+          animation: float 8s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+          animation: float-delayed 10s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }

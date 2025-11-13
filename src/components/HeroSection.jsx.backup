@@ -1,0 +1,256 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useFirestoreDoc } from '../hooks/useFirestore'
+import { HeroSkeleton } from './LoadingSkeletons'
+
+const HeroSection = () => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const { data: heroData, loading } = useFirestoreDoc('content', 'hero')
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 20 - 10,
+        y: (e.clientY / window.innerHeight) * 20 - 10,
+      })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  // Show loading skeleton while fetching data
+  if (loading) {
+    return <HeroSkeleton />
+  }
+
+  // Fallback to default values if no data
+  const hero = heroData || {
+    badge: 'Welcome to Sinar AI',
+    title: 'Building the Future with',
+    highlightedText: 'AI Innovation',
+    description: 'Transform your business with cutting-edge AI solutions.',
+    ctaPrimaryText: 'Start Your Project',
+    ctaPrimaryLink: '/contact',
+    ctaSecondaryText: 'View Our Work',
+    ctaSecondaryLink: '/#portfolio'
+  }
+
+  return (
+    <section
+      id="home"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-sinar-dark via-sinar-dark-light to-sinar-dark py-20"
+    >
+      {/* Animated Background Grid */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'linear-gradient(to right, #d4af37 1px, transparent 1px), linear-gradient(to bottom, #d4af37 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+          animation: 'gridMove 20s linear infinite'
+        }}></div>
+      </div>
+
+      {/* Premium Gradient Orbs with Mouse Tracking */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"
+          style={{
+            transform: `translate(${mousePosition.x * 2}px, ${mousePosition.y * 2}px)`,
+            transition: 'transform 0.5s ease-out',
+            animation: 'float 20s ease-in-out infinite'
+          }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-full blur-3xl"
+          style={{
+            transform: `translate(${-mousePosition.x * 2}px, ${-mousePosition.y * 2}px)`,
+            transition: 'transform 0.5s ease-out',
+            animation: 'float 25s ease-in-out infinite reverse'
+          }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-cyan-500/15 rounded-full blur-3xl animate-pulse"
+          style={{
+            transform: `translate(calc(-50% + ${mousePosition.x}px), calc(-50% + ${mousePosition.y}px))`,
+            transition: 'transform 0.5s ease-out'
+          }}
+        ></div>
+      </div>
+
+      {/* Radial Light Beams */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gradient-to-b from-transparent via-blue-400/10 to-transparent"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-purple-400/10 to-transparent"></div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
+        <div className="space-y-6 md:space-y-8 animate-fade-in">
+          {/* Premium Badge */}
+          <div className="inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 border border-blue-400/30 rounded-full backdrop-blur-sm shadow-lg shadow-blue-500/10">
+            <div className="relative">
+              <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-ping"></div>
+            </div>
+            <span className="text-xs md:text-sm font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              {hero.badge}
+            </span>
+          </div>
+
+          </div>
+
+          {/* Main Headline with Gradient Animation - More Compact */}
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+            <span className="block text-white mb-3 animate-slideDown">{hero.title}</span>
+            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-gradient" style={{ backgroundSize: '200% 200%' }}>
+              {hero.highlightedText}
+            </span>
+          </h1>
+
+          {/* Description with Elegant Typography - More Compact */}
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 leading-relaxed animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+            {hero.description}
+          </p>
+
+          {/* Premium CTA Buttons - More Compact */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
+            <a
+              href={hero.ctaPrimaryLink}
+              className="group relative w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 text-white font-bold text-base rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/50 hover:-translate-y-1"
+            >
+              <span className="relative z-10 flex items-center justify-center space-x-2">
+                <span>{hero.ctaPrimaryText}</span>
+                <svg
+                  className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </a>
+
+            <Link
+              to={hero.ctaSecondaryLink}
+              className="group w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-purple-400/50 text-purple-300 font-bold text-base rounded-xl hover:bg-purple-500/10 hover:border-purple-400 transition-all duration-300"
+            >
+              <span className="flex items-center justify-center space-x-2">
+                <span>{hero.ctaSecondaryText}</span>
+                <svg
+                  className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </span>
+            </Link>
+          </div>
+
+          {/* Compact Stats Grid - Inline Style */}
+          <div className="flex items-center justify-center gap-6 md:gap-12 pt-8 animate-fadeIn flex-wrap" style={{ animationDelay: '0.6s' }}>
+            {[
+              { value: '100%', label: 'AI-Powered', color: 'from-blue-400 to-cyan-400' },
+              { value: '24/7', label: 'Always Active', color: 'from-purple-400 to-pink-400' },
+              { value: '∞', label: 'Possibilities', color: 'from-cyan-400 to-blue-400' }
+            ].map((stat, index) => (
+              <div key={index} className="group text-center">
+                <div className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent font-display mb-1`}>
+                  {stat.value}
+                </div>
+                <div className="text-xs md:text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Inline Styles for Animations */}
+      <style>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes gradient {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+
+        @keyframes gridMove {
+          0% {
+            transform: translate(0, 0);
+          }
+          100% {
+            transform: translate(60px, 60px);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 1s ease-out;
+        }
+
+        .animate-slideDown {
+          animation: slideDown 1s ease-out;
+        }
+
+        .animate-gradient {
+          animation: gradient 5s ease infinite;
+        }
+
+        .animate-fadeIn {
+          animation: fade-in 1s ease-out backwards;
+        }
+      `}</style>
+    </section>
+  )
+}
+
+export default HeroSection

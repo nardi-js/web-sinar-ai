@@ -26,7 +26,7 @@ const PortfolioSection = () => {
   // Show loading skeleton
   if (loading) {
     return (
-      <section id="portfolio" className="relative py-24 lg:py-32 bg-sinar-dark">
+      <section id="portfolio" className="relative py-16 sm:py-20 lg:py-24 bg-sinar-dark">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <SectionSkeleton />
         </div>
@@ -35,7 +35,7 @@ const PortfolioSection = () => {
   }
 
   return (
-    <section id="portfolio" className="relative py-24 lg:py-32 bg-sinar-dark-light/50">
+    <section id="portfolio" className="relative py-16 sm:py-20 lg:py-24 bg-sinar-dark-light/50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">

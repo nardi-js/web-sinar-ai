@@ -1,37 +1,48 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './components/ScrollToTop'
+
+// Simple loading component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-sinar-dark">
+    <div className="text-center">
+      <div className="inline-block w-16 h-16 border-4 border-sinar-gold/30 border-t-sinar-gold rounded-full animate-spin"></div>
+      <p className="mt-4 text-gray-400">Loading...</p>
+    </div>
+  </div>
+)
+
+// Eager load critical pages (above the fold)
 import HomePage from './pages/HomePage'
-import TemplatesPage from './pages/TemplatesPage'
-import ContactPage from './pages/ContactPage'
-import WorkflowPage from './pages/WorkflowPage'
-import FAQPage from './pages/FAQPage'
-import FoundersPage from './pages/FoundersPage'
-import CaseStudyPage from './pages/CaseStudyPage'
-import AIEmployeesPage from './pages/AIEmployeesPage'
-import TechStackPage from './pages/TechStackPage'
-import ValuesEthicsPage from './pages/ValuesEthicsPage'
-import AIChatPage from './pages/AIChatPage'
-import TimeEstimatorPage from './pages/TimeEstimatorPage'
 import LoginPage from './pages/LoginPage'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminHeroSection from './pages/admin/AdminHeroSection'
-import AdminAboutSection from './pages/admin/AdminAboutSection'
-import AdminInitialize from './pages/admin/AdminInitialize'
-import AdminDivisions from './pages/admin/AdminDivisions'
-import AdminPortfolio from './pages/admin/AdminPortfolio'
-import AdminTestimonials from './pages/admin/AdminTestimonials'
-import AdminWorkflow from './pages/admin/AdminWorkflow'
-import AdminFAQ from './pages/admin/AdminFAQ'
-import AdminCaseStudies from './pages/admin/AdminCaseStudies'
-import AdminFounders from './pages/admin/AdminFounders'
-import AdminTechStack from './pages/admin/AdminTechStack'
-import AdminTemplates from './pages/admin/AdminTemplates'
-import AdminValues from './pages/admin/AdminValues'
-import AdminContact from './pages/admin/AdminContact'
+
+// Lazy load public pages
+const TemplatesPage = lazy(() => import('./pages/TemplatesPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage'))
+const WorkflowPage = lazy(() => import('./pages/WorkflowPage'))
+const FAQPage = lazy(() => import('./pages/FAQPage'))
+const FoundersPage = lazy(() => import('./pages/FoundersPage'))
+const CaseStudyPage = lazy(() => import('./pages/CaseStudyPage'))
+const AIEmployeesPage = lazy(() => import('./pages/AIEmployeesPage'))
+const TechStackPage = lazy(() => import('./pages/TechStackPage'))
+const ValuesEthicsPage = lazy(() => import('./pages/ValuesEthicsPage'))
+const AIChatPage = lazy(() => import('./pages/AIChatPage'))
+const TimeEstimatorPage = lazy(() => import('./pages/TimeEstimatorPage'))
+
+// Lazy load admin pages (rarely used, heavy)
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminHeroSection = lazy(() => import('./pages/admin/AdminHeroSection'))
+const AdminAboutSection = lazy(() => import('./pages/admin/AdminAboutSection'))
+const AdminInitialize = lazy(() => import('./pages/admin/AdminInitialize'))
+const AdminPortfolio = lazy(() => import('./pages/admin/AdminPortfolio'))
+const AdminTestimonials = lazy(() => import('./pages/admin/AdminTestimonials'))
+const AdminWorkflow = lazy(() => import('./pages/admin/AdminWorkflow'))
+const AdminFAQ = lazy(() => import('./pages/admin/AdminFAQ'))
+const AdminTemplates = lazy(() => import('./pages/admin/AdminTemplates'))
 
 function App() {
   const [scrollY, setScrollY] = useState(0)
@@ -47,59 +58,61 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <AuthProvider>
         <div className="min-h-screen bg-sinar-dark text-gray-100 overflow-x-hidden">
-          <Routes>
-            {/* Public Routes with Navigation & Footer */}
-            <Route path="/" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <HomePage />
-                <Footer />
-              </>
-            } />
-            <Route path="/templates" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <TemplatesPage />
-                <Footer />
-              </>
-            } />
-            <Route path="/workflow" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <WorkflowPage />
-                <Footer />
-              </>
-            } />
-            <Route path="/faq" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <FAQPage />
-                <Footer />
-              </>
-            } />
-            <Route path="/contact" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <ContactPage />
-                <Footer />
-              </>
-            } />
-            <Route path="/founders" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <FoundersPage />
-                <Footer />
-              </>
-            } />
-            <Route path="/case-study" element={
-              <>
-                <Navigation scrollY={scrollY} />
-                <CaseStudyPage />
-                <Footer />
-              </>
-            } />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Public Routes with Navigation & Footer */}
+              <Route path="/" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <HomePage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/templates" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <TemplatesPage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/workflow" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <WorkflowPage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/faq" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <FAQPage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/contact" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <ContactPage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/founders" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <FoundersPage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/case-study" element={
+                <>
+                  <Navigation scrollY={scrollY} />
+                  <CaseStudyPage />
+                  <Footer />
+                </>
+              } />
             <Route path="/ai-employees" element={
               <>
                 <Navigation scrollY={scrollY} />
@@ -155,11 +168,6 @@ function App() {
                 <AdminAboutSection />
               </ProtectedRoute>
             } />
-            <Route path="/admin/divisions" element={
-              <ProtectedRoute>
-                <AdminDivisions />
-              </ProtectedRoute>
-            } />
             <Route path="/admin/portfolio" element={
               <ProtectedRoute>
                 <AdminPortfolio />
@@ -180,34 +188,9 @@ function App() {
                 <AdminFAQ />
               </ProtectedRoute>
             } />
-            <Route path="/admin/case-studies" element={
-              <ProtectedRoute>
-                <AdminCaseStudies />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/founders" element={
-              <ProtectedRoute>
-                <AdminFounders />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/tech-stack" element={
-              <ProtectedRoute>
-                <AdminTechStack />
-              </ProtectedRoute>
-            } />
             <Route path="/admin/templates" element={
               <ProtectedRoute>
                 <AdminTemplates />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/values" element={
-              <ProtectedRoute>
-                <AdminValues />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/contact" element={
-              <ProtectedRoute>
-                <AdminContact />
               </ProtectedRoute>
             } />
             <Route path="/admin/initialize" element={
@@ -216,6 +199,7 @@ function App() {
               </ProtectedRoute>
             } />
           </Routes>
+          </Suspense>
         </div>
       </AuthProvider>
     </Router>
