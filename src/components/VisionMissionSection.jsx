@@ -1,4 +1,20 @@
+import { useFirestoreDoc } from '../hooks/useFirestore'
+import { SectionSkeleton } from './LoadingSkeletons'
+
 const VisionMissionSection = () => {
+  // eslint-disable-next-line no-unused-vars
+  const { data: aboutData, loading } = useFirestoreDoc('content', 'about')
+
+  if (loading) {
+    return (
+      <section id="vision" className="relative py-24 lg:py-32 bg-sinar-dark-light/50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <SectionSkeleton />
+        </div>
+      </section>
+    )
+  }
+
   const missionPoints = [
     {
       icon: (

@@ -1,4 +1,34 @@
+import { useFirestoreDoc } from '../hooks/useFirestore'
+import { StatsSkeleton } from './LoadingSkeletons'
+
 const AboutSection = () => {
+  const { data: aboutData, loading } = useFirestoreDoc('content', 'about')
+
+  // Show loading skeleton while fetching
+  if (loading) {
+    return (
+      <section id="about" className="relative py-24 lg:py-32 overflow-hidden bg-sinar-dark">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <StatsSkeleton />
+        </div>
+      </section>
+    )
+  }
+
+  // Fallback data
+  const about = aboutData || {
+    badge: 'About Us',
+    title: 'Where AI Does the Work',
+    description: 'SinarAI System is a futuristic organization where AI serves as our workforce.',
+    mission: 'We don\'t hire humans to act like machines — we train machines to serve human values.',
+    stats: [
+      { number: '100+', label: 'AI Projects' },
+      { number: '24/7', label: 'Always Active' },
+      { number: '∞', label: 'Possibilities' },
+      { number: '100%', label: 'AI-Powered' }
+    ]
+  }
+
   return (
     <section id="about" className="relative py-24 lg:py-32 overflow-hidden">
       {/* Background Elements */}
@@ -13,35 +43,39 @@ const AboutSection = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <div className="inline-block px-4 py-1.5 bg-sinar-gold/10 border border-sinar-gold/30 rounded-full">
-                <span className="text-sm text-sinar-gold font-medium">About Us</span>
+                <span className="text-sm text-sinar-gold font-medium">{about.badge}</span>
               </div>
 
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                Where AI Does the{' '}
-                <span className="text-sinar-gold">Work</span>
+                {about.title.split(' ').slice(0, -1).join(' ')}{' '}
+                <span className="text-sinar-gold">{about.title.split(' ').slice(-1)}</span>
               </h2>
             </div>
 
             <div className="space-y-6 text-gray-400 text-lg leading-relaxed">
-              <p>
-                <span className="text-sinar-gold-light font-semibold">SinarAI System</span> is not your typical company. We are a futuristic organization where Artificial Intelligence serves as our workforce — writing, designing, coding, and automating — all under the guidance of human vision and values.
-              </p>
-
-              <p>
-                We don't build AI. We <span className="text-white font-medium">work with AI</span> to create digital solutions that are efficient, intelligent, and deeply human-centered.
-              </p>
-
-              <p>
-                From websites to content creation, from automation systems to productivity tools — our AI workforce illuminates every project with clarity and purpose.
-              </p>
+              <p>{about.description}</p>
             </div>
+
+            {/* Stats Grid */}
+            {about.stats && about.stats.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8">
+                {about.stats.map((stat, index) => (
+                  <div key={index} className="text-center space-y-2">
+                    <div className="text-3xl md:text-4xl font-bold text-sinar-gold font-display">
+                      {stat.number}
+                    </div>
+                    <div className="text-sm text-gray-400">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Quote Box */}
             <div className="relative p-8 bg-gradient-to-br from-sinar-dark-light to-sinar-dark border border-sinar-gold/20 rounded-2xl">
               <div className="absolute top-4 left-4 text-6xl text-sinar-gold/20 font-serif">"</div>
               <blockquote className="relative z-10 space-y-4">
                 <p className="text-xl text-gray-300 italic leading-relaxed pl-8">
-                  We don't hire humans to act like machines — we train machines to serve human values.
+                  {about.mission}
                 </p>
                 <div className="flex items-center space-x-3 pl-8">
                   <div className="w-12 h-0.5 bg-sinar-gold"></div>
@@ -165,7 +199,7 @@ const AboutSection = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes spin-slow {
           from {
             transform: rotate(0deg);

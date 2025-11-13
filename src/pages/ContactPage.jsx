@@ -1,6 +1,23 @@
 import ContactSection from '../components/ContactSection'
+import { useFirestoreDoc } from '../hooks/useFirestore'
 
 const ContactPage = () => {
+  const { data: contactData } = useFirestoreDoc('content', 'contact')
+
+  const socialLinks = []
+  if (contactData?.twitter) {
+    socialLinks.push({ name: 'Twitter', url: contactData.twitter, letter: 'T' })
+  }
+  if (contactData?.linkedin) {
+    socialLinks.push({ name: 'LinkedIn', url: contactData.linkedin, letter: 'L' })
+  }
+  if (contactData?.instagram) {
+    socialLinks.push({ name: 'Instagram', url: contactData.instagram, letter: 'I' })
+  }
+  if (contactData?.facebook) {
+    socialLinks.push({ name: 'Facebook', url: contactData.facebook, letter: 'F' })
+  }
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section for Contact Page */}
@@ -27,35 +44,24 @@ const ContactPage = () => {
             </p>
 
             {/* Follow Our Journey - Social Links */}
-            <div className="pt-4">
-              <p className="text-sm text-gray-500 mb-4">Follow our journey</p>
-              <div className="flex items-center justify-center gap-4">
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 flex items-center justify-center bg-sinar-dark-light border border-sinar-gold/20 rounded-lg hover:border-sinar-gold/50 hover:bg-sinar-gold/10 transition-all duration-300"
-                >
-                  <span className="text-sinar-gold-light font-semibold">T</span>
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 flex items-center justify-center bg-sinar-dark-light border border-sinar-gold/20 rounded-lg hover:border-sinar-gold/50 hover:bg-sinar-gold/10 transition-all duration-300"
-                >
-                  <span className="text-sinar-gold-light font-semibold">L</span>
-                </a>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 flex items-center justify-center bg-sinar-dark-light border border-sinar-gold/20 rounded-lg hover:border-sinar-gold/50 hover:bg-sinar-gold/10 transition-all duration-300"
-                >
-                  <span className="text-sinar-gold-light font-semibold">G</span>
-                </a>
+            {socialLinks.length > 0 && (
+              <div className="pt-4">
+                <p className="text-sm text-gray-500 mb-4">Follow our journey</p>
+                <div className="flex items-center justify-center gap-4">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.name}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 flex items-center justify-center bg-sinar-dark-light border border-sinar-gold/20 rounded-lg hover:border-sinar-gold/50 hover:bg-sinar-gold/10 transition-all duration-300"
+                    >
+                      <span className="text-sinar-gold-light font-semibold">{social.letter}</span>
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>

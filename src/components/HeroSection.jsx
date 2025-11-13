@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useFirestoreDoc } from '../hooks/useFirestore'
+import { HeroSkeleton } from './LoadingSkeletons'
 
 const HeroSection = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const { data: heroData, loading } = useFirestoreDoc('content', 'hero')
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -15,6 +18,23 @@ const HeroSection = () => {
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
+
+  // Show loading skeleton while fetching data
+  if (loading) {
+    return <HeroSkeleton />
+  }
+
+  // Fallback to default values if no data
+  const hero = heroData || {
+    badge: 'Welcome to Sinar AI',
+    title: 'Building the Future with',
+    highlightedText: 'AI Innovation',
+    description: 'Transform your business with cutting-edge AI solutions.',
+    ctaPrimaryText: 'Start Your Project',
+    ctaPrimaryLink: '/contact',
+    ctaSecondaryText: 'View Our Work',
+    ctaSecondaryLink: '/#portfolio'
+  }
 
   return (
     <section
@@ -63,31 +83,31 @@ const HeroSection = () => {
           <div className="inline-flex items-center space-x-2 px-4 py-2 bg-sinar-dark-light/50 backdrop-blur-sm border border-sinar-gold/20 rounded-full">
             <div className="w-2 h-2 bg-sinar-gold rounded-full animate-pulse"></div>
             <span className="text-sm text-sinar-gold-light font-medium">
-              Powered by AI Workforce
+              {hero.badge}
             </span>
           </div>
 
           {/* Main Headline */}
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
-            <span className="block text-white">AI-Driven Work.</span>
+            <span className="block text-white">{hero.title}</span>
             <span className="block bg-gradient-to-r from-sinar-gold via-sinar-gold-light to-sinar-gold bg-clip-text text-transparent animate-gradient">
-              Human Values.
+              {hero.highlightedText}
             </span>
           </h1>
 
           {/* Subtext */}
           <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400 leading-relaxed">
-            We are SinarAI System — a futuristic company where Artificial Intelligence serves as our workforce, creating digital solutions like websites, content, and automation systems, all guided by human wisdom and values.
+            {hero.description}
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <a
-              href="#portfolio"
+              href={hero.ctaPrimaryLink}
               className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-sinar-gold to-sinar-gold-light text-sinar-dark font-semibold rounded-lg hover:shadow-2xl hover:shadow-sinar-gold/50 transition-all duration-500 transform hover:-translate-y-1 hover:scale-105"
             >
               <span className="flex items-center justify-center space-x-2">
-                <span>Explore Our Work</span>
+                <span>{hero.ctaPrimaryText}</span>
                 <svg
                   className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                   fill="none"
@@ -105,11 +125,11 @@ const HeroSection = () => {
             </a>
 
             <Link
-              to="/contact"
+              to={hero.ctaSecondaryLink}
               className="group w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-sinar-gold/50 text-sinar-gold-light font-semibold rounded-lg hover:bg-sinar-gold/10 hover:border-sinar-gold transition-all duration-300"
             >
               <span className="flex items-center justify-center space-x-2">
-                <span>Contact Us</span>
+                <span>{hero.ctaSecondaryText}</span>
                 <svg
                   className="w-5 h-5 group-hover:rotate-45 transition-transform"
                   fill="none"
@@ -151,7 +171,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from {
             opacity: 0;

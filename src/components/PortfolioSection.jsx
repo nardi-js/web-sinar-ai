@@ -1,72 +1,38 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useFirestoreCollection } from '../hooks/useFirestore'
+import { SectionSkeleton } from './LoadingSkeletons'
 
 const PortfolioSection = () => {
   const [activeFilter, setActiveFilter] = useState('all')
   const [hoveredProject, setHoveredProject] = useState(null)
+  const { data: portfolioData, loading } = useFirestoreCollection('portfolio')
 
-  const filters = ['All', 'Web', 'Content', 'Automation']
+  const projects = useMemo(() => {
+    return portfolioData.length > 0 ? portfolioData : []
+  }, [portfolioData])
 
-  const projects = [
-    {
-      id: 1,
-      title: 'TechFlow Platform',
-      category: 'Web',
-      description: 'A modern SaaS platform for project management with AI-powered task allocation and smart scheduling.',
-      tools: ['React', 'Node.js', 'AI Task Optimizer', 'Cloud Infrastructure'],
-      image: '🌐',
-      tags: ['Web Development', 'AI Integration'],
-    },
-    {
-      id: 2,
-      title: 'BrandVoice Content Suite',
-      category: 'Content',
-      description: 'Complete brand content generation system producing consistent, engaging materials across all channels.',
-      tools: ['GPT-4', 'DALL-E', 'Content Strategy AI', 'SEO Optimizer'],
-      image: '✍️',
-      tags: ['Content Creation', 'Brand Strategy'],
-    },
-    {
-      id: 3,
-      title: 'SmartDocs Automation',
-      category: 'Automation',
-      description: 'Intelligent document processing system that automatically generates, categorizes, and manages business documents.',
-      tools: ['Document AI', 'OCR Technology', 'Workflow Automation', 'Cloud Storage'],
-      image: '📄',
-      tags: ['Automation', 'Document Management'],
-    },
-    {
-      id: 4,
-      title: 'EcoCommerce Store',
-      category: 'Web',
-      description: 'Sustainable e-commerce platform with AI-powered product recommendations and carbon footprint tracking.',
-      tools: ['Next.js', 'Recommendation Engine', 'Payment Gateway', 'Analytics'],
-      image: '🛒',
-      tags: ['E-commerce', 'Sustainability'],
-    },
-    {
-      id: 5,
-      title: 'ContentHub Magazine',
-      category: 'Content',
-      description: 'AI-curated digital magazine with personalized article recommendations and automated content scheduling.',
-      tools: ['Content AI', 'Personalization Engine', 'CMS', 'Analytics'],
-      image: '📰',
-      tags: ['Publishing', 'Curation'],
-    },
-    {
-      id: 6,
-      title: 'TaskMaster Pro',
-      category: 'Automation',
-      description: 'Enterprise task automation platform that connects multiple tools and automates repetitive workflows.',
-      tools: ['Workflow Builder', 'API Integrations', 'Smart Triggers', 'Analytics'],
-      image: '⚡',
-      tags: ['Productivity', 'Integration'],
-    },
-  ]
+  // Extract unique categories from projects
+  const filters = useMemo(() => {
+    const categories = new Set(projects.map(p => p.category))
+    return ['All', ...Array.from(categories)]
+  }, [projects])
 
-  const filteredProjects =
-    activeFilter === 'all'
-      ? projects
-      : projects.filter((p) => p.category.toLowerCase() === activeFilter.toLowerCase())
+  // Filter projects based on active filter
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === 'all') return projects
+    return projects.filter(p => p.category?.toLowerCase() === activeFilter)
+  }, [projects, activeFilter])
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <section id="portfolio" className="relative py-24 lg:py-32 bg-sinar-dark">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <SectionSkeleton />
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section id="portfolio" className="relative py-24 lg:py-32 bg-sinar-dark-light/50">
@@ -142,32 +108,34 @@ const PortfolioSection = () => {
                   {project.description}
                 </p>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-sinar-gold/10 text-sinar-gold-light text-xs rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Tools Used */}
-                <div className="pt-4 border-t border-sinar-gold/5">
-                  <p className="text-xs text-gray-500 mb-2 font-medium">AI Tools Used:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tools.map((tool, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs text-gray-400 bg-sinar-dark-light px-2 py-1 rounded"
-                      >
-                        {tool}
-                      </span>
-                    ))}
+                {/* Technologies */}
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className="pt-4 border-t border-sinar-gold/5">
+                    <p className="text-xs text-gray-500 mb-2 font-medium">Technologies:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech, idx) => (
+                        <span
+                          key={idx}
+                          className="text-xs text-gray-400 bg-sinar-dark-light px-2 py-1 rounded"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Results */}
+                {project.results && (
+                  <div className="pt-3">
+                    <div className="flex items-center gap-2 text-sinar-gold text-sm">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>{project.results}</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* View Details Link */}
                 <div className="pt-4">

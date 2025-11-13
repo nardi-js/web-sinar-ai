@@ -66,7 +66,7 @@ const TemplateCard = ({ template }) => {
         <div className="space-y-2">
           <p className="text-xs text-gray-500 font-medium">Key Features:</p>
           <div className="flex flex-wrap gap-2">
-            {template.features.slice(0, 3).map((feature, idx) => (
+            {template.features?.slice(0, 3).map((feature, idx) => (
               <span
                 key={idx}
                 className="text-xs text-gray-400 bg-sinar-dark px-2 py-1 rounded"
@@ -74,7 +74,7 @@ const TemplateCard = ({ template }) => {
                 {feature}
               </span>
             ))}
-            {template.features.length > 3 && (
+            {template.features && template.features.length > 3 && (
               <span className="text-xs text-sinar-gold-light px-2 py-1">
                 +{template.features.length - 3} more
               </span>
@@ -86,7 +86,7 @@ const TemplateCard = ({ template }) => {
         <div className="pt-4 border-t border-sinar-gold/5">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-500">Tech:</span>
-            {template.tech.map((tech, idx) => (
+            {template.tech?.map((tech, idx) => (
               <span
                 key={idx}
                 className="text-xs text-gray-300 font-medium"

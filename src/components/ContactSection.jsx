@@ -1,6 +1,10 @@
 import { useState } from 'react'
+import { useFirestoreDoc } from '../hooks/useFirestore'
 
 const ContactSection = () => {
+  // eslint-disable-next-line no-unused-vars
+  const { data: contactData, loading } = useFirestoreDoc('content', 'contact')
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -63,31 +67,51 @@ const ContactSection = () => {
 
             {/* Contact Info Cards */}
             <div className="space-y-4 pt-8">
-              <div className="flex items-start space-x-4 p-4 bg-sinar-dark-light/50 border border-sinar-gold/10 rounded-xl hover:border-sinar-gold/30 transition-colors duration-300">
-                <div className="flex-shrink-0 w-12 h-12 bg-sinar-gold/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-sinar-gold" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-                  </svg>
+              {contactData?.email && (
+                <div className="flex items-start space-x-4 p-4 bg-sinar-dark-light/50 border border-sinar-gold/10 rounded-xl hover:border-sinar-gold/30 transition-colors duration-300">
+                  <div className="flex-shrink-0 w-12 h-12 bg-sinar-gold/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-sinar-gold" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Email</h4>
+                    <a href={`mailto:${contactData.email}`} className="text-gray-400 hover:text-sinar-gold transition-colors">
+                      {contactData.email}
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-white mb-1">Email</h4>
-                  <a href="mailto:hello@sinarai.system" className="text-gray-400 hover:text-sinar-gold transition-colors">
-                    hello@sinarai.system
-                  </a>
-                </div>
-              </div>
+              )}
 
-              <div className="flex items-start space-x-4 p-4 bg-sinar-dark-light/50 border border-sinar-gold/10 rounded-xl hover:border-sinar-gold/30 transition-colors duration-300">
-                <div className="flex-shrink-0 w-12 h-12 bg-sinar-gold/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-sinar-gold" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                  </svg>
+              {contactData?.address && (
+                <div className="flex items-start space-x-4 p-4 bg-sinar-dark-light/50 border border-sinar-gold/10 rounded-xl hover:border-sinar-gold/30 transition-colors duration-300">
+                  <div className="flex-shrink-0 w-12 h-12 bg-sinar-gold/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-sinar-gold" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Location</h4>
+                    <p className="text-gray-400 whitespace-pre-line">{contactData.address}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-white mb-1">Location</h4>
-                  <p className="text-gray-400">Global — Powered by Cloud</p>
+              )}
+
+              {contactData?.phone && (
+                <div className="flex items-start space-x-4 p-4 bg-sinar-dark-light/50 border border-sinar-gold/10 rounded-xl hover:border-sinar-gold/30 transition-colors duration-300">
+                  <div className="flex-shrink-0 w-12 h-12 bg-sinar-gold/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-sinar-gold" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Phone</h4>
+                    <a href={`tel:${contactData.phone}`} className="text-gray-400 hover:text-sinar-gold transition-colors">
+                      {contactData.phone}
+                    </a>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex items-start space-x-4 p-4 bg-sinar-dark-light/50 border border-sinar-gold/10 rounded-xl hover:border-sinar-gold/30 transition-colors duration-300">
                 <div className="flex-shrink-0 w-12 h-12 bg-sinar-gold/10 rounded-lg flex items-center justify-center">
@@ -106,17 +130,54 @@ const ContactSection = () => {
             <div className="pt-8">
               <p className="text-sm text-gray-400 mb-4">Follow our journey</p>
               <div className="flex space-x-4">
-                {['Twitter', 'LinkedIn', 'GitHub'].map((platform) => (
+                {contactData?.twitter && (
                   <a
-                    key={platform}
-                    href="#"
+                    href={contactData.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-12 h-12 bg-sinar-dark-light border border-sinar-gold/20 rounded-lg flex items-center justify-center hover:bg-sinar-gold/10 hover:border-sinar-gold/50 transition-all duration-300 group"
                   >
                     <span className="text-gray-400 group-hover:text-sinar-gold text-xs font-medium">
-                      {platform[0]}
+                      T
                     </span>
                   </a>
-                ))}
+                )}
+                {contactData?.linkedin && (
+                  <a
+                    href={contactData.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-sinar-dark-light border border-sinar-gold/20 rounded-lg flex items-center justify-center hover:bg-sinar-gold/10 hover:border-sinar-gold/50 transition-all duration-300 group"
+                  >
+                    <span className="text-gray-400 group-hover:text-sinar-gold text-xs font-medium">
+                      L
+                    </span>
+                  </a>
+                )}
+                {contactData?.instagram && (
+                  <a
+                    href={contactData.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-sinar-dark-light border border-sinar-gold/20 rounded-lg flex items-center justify-center hover:bg-sinar-gold/10 hover:border-sinar-gold/50 transition-all duration-300 group"
+                  >
+                    <span className="text-gray-400 group-hover:text-sinar-gold text-xs font-medium">
+                      I
+                    </span>
+                  </a>
+                )}
+                {contactData?.facebook && (
+                  <a
+                    href={contactData.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-sinar-dark-light border border-sinar-gold/20 rounded-lg flex items-center justify-center hover:bg-sinar-gold/10 hover:border-sinar-gold/50 transition-all duration-300 group"
+                  >
+                    <span className="text-gray-400 group-hover:text-sinar-gold text-xs font-medium">
+                      F
+                    </span>
+                  </a>
+                )}
               </div>
             </div>
           </div>

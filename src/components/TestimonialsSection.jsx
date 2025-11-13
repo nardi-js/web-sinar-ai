@@ -1,36 +1,25 @@
+import { useFirestoreCollection } from '../hooks/useFirestore'
+import { TestimonialSkeleton } from './LoadingSkeletons'
+
 const TestimonialsSection = () => {
-  const testimonials = [
-    {
-      id: 1,
-      name: 'Sarah Martinez',
-      role: 'CEO, TechFlow Solutions',
-      company: 'TechFlow',
-      content:
-        'Working with SinarAI System was transformative. Their AI workforce delivered our platform faster than any traditional team could, without sacrificing quality. The attention to human-centered design was remarkable.',
-      avatar: '👩‍💼',
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: 'James Chen',
-      role: 'Marketing Director',
-      company: 'BrandVoice',
-      content:
-        'The content quality and consistency exceeded our expectations. It\'s impressive how AI can capture brand voice so accurately. SinarAI truly understands the balance between automation and authenticity.',
-      avatar: '👨‍💼',
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      role: 'Operations Manager',
-      company: 'SmartDocs Inc',
-      content:
-        'The automation system they built saved us countless hours. What used to take our team days now happens in minutes. The ROI has been incredible, and the system just keeps getting better.',
-      avatar: '👩‍💻',
-      rating: 5,
-    },
-  ]
+  const { data: testimonialsData, loading } = useFirestoreCollection('testimonials')
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <section id="testimonials" className="relative py-24 lg:py-32 overflow-hidden bg-sinar-dark">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8">
+            <TestimonialSkeleton />
+            <TestimonialSkeleton />
+            <TestimonialSkeleton />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const testimonials = testimonialsData.length > 0 ? testimonialsData : []
 
   return (
     <section id="testimonials" className="relative py-24 lg:py-32 overflow-hidden">

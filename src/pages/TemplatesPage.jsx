@@ -1,124 +1,36 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import TemplateCard from '../components/templates/TemplateCard'
 import TemplateFilters from '../components/templates/TemplateFilters'
+import { useFirestoreCollection } from '../hooks/useFirestore'
+import { SectionSkeleton } from '../components/LoadingSkeletons'
 
 const TemplatesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [priceFilter, setPriceFilter] = useState('all')
+  const { data: templatesData, loading } = useFirestoreCollection('templates')
 
-  // Data template statis untuk testing
-  const templates = [
-    {
-      id: 1,
-      title: 'Modern Portfolio Website',
-      description: 'Clean and elegant portfolio template perfect for showcasing your work with smooth animations.',
-      category: 'Portfolio',
-      price: 299000,
-      image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=600&fit=crop',
-      features: ['Responsive Design', 'Dark Mode', 'Smooth Animations', 'Contact Form'],
-      tech: ['React', 'Tailwind CSS', 'Framer Motion'],
-      demo: '#',
-      isFeatured: true,
-    },
-    {
-      id: 2,
-      title: 'E-Commerce Dashboard',
-      description: 'Complete admin dashboard with analytics, product management, and order tracking.',
-      category: 'Dashboard',
-      price: 599000,
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-      features: ['Analytics Charts', 'Product CRUD', 'Order Management', 'User Management'],
-      tech: ['React', 'Chart.js', 'Tailwind CSS'],
-      demo: '#',
-      isFeatured: true,
-    },
-    {
-      id: 3,
-      title: 'Landing Page Startup',
-      description: 'High-converting landing page template designed for SaaS and tech startups.',
-      category: 'Landing Page',
-      price: 199000,
-      image: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&h=600&fit=crop',
-      features: ['Hero Section', 'Pricing Table', 'Testimonials', 'CTA Sections'],
-      tech: ['HTML', 'CSS', 'JavaScript'],
-      demo: '#',
-      isFeatured: false,
-    },
-    {
-      id: 4,
-      title: 'Blog & Magazine Template',
-      description: 'Modern blog template with multiple layouts, perfect for content creators.',
-      category: 'Blog',
-      price: 349000,
-      image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop',
-      features: ['Multiple Layouts', 'SEO Optimized', 'Dark Mode', 'Newsletter Integration'],
-      tech: ['Next.js', 'Tailwind CSS', 'MDX'],
-      demo: '#',
-      isFeatured: false,
-    },
-    {
-      id: 5,
-      title: 'Corporate Business Website',
-      description: 'Professional corporate website with team showcase and service pages.',
-      category: 'Corporate',
-      price: 499000,
-      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop',
-      features: ['Team Section', 'Service Pages', 'About Company', 'Contact Form'],
-      tech: ['React', 'Tailwind CSS', 'React Router'],
-      demo: '#',
-      isFeatured: true,
-    },
-    {
-      id: 6,
-      title: 'Restaurant & Cafe Website',
-      description: 'Delicious template for restaurants with menu display and reservation system.',
-      category: 'Food & Beverage',
-      price: 399000,
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
-      features: ['Menu Display', 'Reservation Form', 'Gallery', 'Location Map'],
-      tech: ['React', 'Tailwind CSS', 'Google Maps API'],
-      demo: '#',
-      isFeatured: false,
-    },
-    {
-      id: 7,
-      title: 'Fitness & Gym Website',
-      description: 'Energetic template for fitness centers with class schedules and trainer profiles.',
-      category: 'Health & Fitness',
-      price: 449000,
-      image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop',
-      features: ['Class Schedule', 'Trainer Profiles', 'Membership Plans', 'BMI Calculator'],
-      tech: ['React', 'Tailwind CSS', 'Calendar'],
-      demo: '#',
-      isFeatured: false,
-    },
-    {
-      id: 8,
-      title: 'Real Estate Listing',
-      description: 'Property listing template with advanced search and filtering capabilities.',
-      category: 'Real Estate',
-      price: 549000,
-      image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
-      features: ['Property Search', 'Map Integration', 'Image Gallery', 'Contact Agent'],
-      tech: ['React', 'Tailwind CSS', 'Mapbox'],
-      demo: '#',
-      isFeatured: true,
-    },
-  ]
+  const templates = useMemo(() => {
+    return templatesData.length > 0 ? templatesData : []
+  }, [templatesData])
 
-  const categories = [
-    'all',
-    'Portfolio',
-    'Dashboard',
-    'Landing Page',
-    'Blog',
-    'Corporate',
-    'Food & Beverage',
-    'Health & Fitness',
-    'Real Estate',
-  ]
+  // Extract unique categories from templates
+  const categories = useMemo(() => {
+    const cats = new Set(templates.map(t => t.category))
+    return ['all', ...Array.from(cats)]
+  }, [templates])
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sinar-dark pt-20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+          <SectionSkeleton />
+        </div>
+      </div>
+    )
+  }
 
   // Filter logic
   const filteredTemplates = templates.filter((template) => {

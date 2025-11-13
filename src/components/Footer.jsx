@@ -1,30 +1,29 @@
+import { Link } from 'react-router-dom'
+
 const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   const footerLinks = {
     Company: [
-      { name: 'About Us', href: '#about' },
-      { name: 'Our Vision', href: '#vision' },
-      { name: 'Divisions', href: '#divisions' },
-      { name: 'Portfolio', href: '#portfolio' },
-    ],
-    Services: [
-      { name: 'Creative Studio', href: '#divisions' },
-      { name: 'Web & System Studio', href: '#divisions' },
-      { name: 'Document & Task Studio', href: '#divisions' },
-      { name: 'Custom Solutions', href: '#contact' },
+      { name: 'Founders', href: '/founders' },
+      { name: 'Values & Ethics', href: '/values' },
+      { name: 'AI Employees', href: '/ai-employees' },
+      { name: 'Tech Stack', href: '/tech-stack' },
     ],
     Resources: [
-      { name: 'Blog', href: '#' },
-      { name: 'Case Studies', href: '#portfolio' },
-      { name: 'AI Insights', href: '#' },
-      { name: 'Documentation', href: '#' },
+      { name: 'Workflow', href: '/workflow' },
+      { name: 'Templates', href: '/templates' },
+      { name: 'Case Studies', href: '/case-study' },
+      { name: 'FAQ', href: '/faq' },
+    ],
+    Tools: [
+      { name: 'Time Estimator', href: '/time-estimator' },
+      { name: 'AI Chat', href: '/ai-chat' },
     ],
     Connect: [
-      { name: 'Contact', href: '#contact' },
+      { name: 'Contact Us', href: '/contact' },
       { name: 'Twitter', href: '#' },
       { name: 'LinkedIn', href: '#' },
-      { name: 'GitHub', href: '#' },
     ],
   }
 
@@ -98,12 +97,21 @@ const Footer = () => {
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className="text-gray-400 hover:text-sinar-gold text-sm transition-colors duration-300 inline-block hover:translate-x-1 transform"
-                    >
-                      {link.name}
-                    </a>
+                    {link.href.startsWith('/') ? (
+                      <Link
+                        to={link.href}
+                        className="text-gray-400 hover:text-sinar-gold text-sm transition-colors duration-300 inline-block hover:translate-x-1 transform"
+                      >
+                        {link.name}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="text-gray-400 hover:text-sinar-gold text-sm transition-colors duration-300 inline-block hover:translate-x-1 transform"
+                      >
+                        {link.name}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
